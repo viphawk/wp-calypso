@@ -395,14 +395,6 @@ export class Checkout extends React.Component {
 			return redirectTo;
 		}
 
-		if ( this.props.isEligibleForCheckoutToChecklist && receipt ) {
-			analytics.tracks.recordEvent( 'calypso_checklist_assign', {
-				site: selectedSiteSlug,
-				plan: 'paid',
-			} );
-			return `/checklist/${ selectedSiteSlug }`;
-		}
-
 		/**
 		 * @TODO Enable when plan setup is completed on the My Plan page
 		 *
