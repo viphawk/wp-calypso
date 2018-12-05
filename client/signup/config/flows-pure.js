@@ -11,7 +11,10 @@ import { noop } from 'lodash';
 import config from 'config';
 import { addQueryArgs } from 'lib/route';
 
-export function generateFlows( { getSiteDestination = noop, getPostsDestination = noop } = {} ) {
+export function generateFlows( {
+	getSiteDestination = noop,
+	getChecklistDestination = noop,
+} = {} ) {
 	const flows = {
 		account: {
 			steps: [ 'user' ],
@@ -95,28 +98,28 @@ export function generateFlows( { getSiteDestination = noop, getPostsDestination 
 
 		subdomain: {
 			steps: [ 'design-type', 'themes', 'domains', 'plans', 'user' ],
-			destination: getSiteDestination,
+			destination: getChecklistDestination,
 			description: 'Provide a vertical for subdomains',
 			lastModified: '2016-10-31',
 		},
 
 		main: {
 			steps: [ 'user', 'about', 'domains', 'plans' ],
-			destination: getSiteDestination,
+			destination: getChecklistDestination,
 			description: 'The current best performing flow in AB tests',
 			lastModified: '2018-10-16',
 		},
 
 		onboarding: {
 			steps: [ 'user', 'site-type', 'site-topic', 'site-information', 'domains', 'plans' ],
-			destination: getSiteDestination,
+			destination: getChecklistDestination,
 			description: 'The improved onboarding flow.',
 			lastModified: '2018-10-22',
 		},
 
 		'onboarding-dev': {
 			steps: [ 'user', 'site-type', 'site-topic', 'site-information', 'domains', 'plans' ],
-			destination: getSiteDestination,
+			destination: getChecklistDestination,
 			description: 'A temporary flow for holding under-development steps',
 			lastModified: '2018-10-29',
 		},
@@ -150,7 +153,7 @@ export function generateFlows( { getSiteDestination = noop, getPostsDestination 
 
 		desktop: {
 			steps: [ 'about', 'themes', 'domains', 'plans', 'user' ],
-			destination: getPostsDestination,
+			destination: getChecklistDestination,
 			description: 'Signup flow for desktop app',
 			lastModified: '2018-01-24',
 		},

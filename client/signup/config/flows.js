@@ -40,11 +40,11 @@ function getSiteDestination( dependencies ) {
 	return protocol + '://' + dependencies.siteSlug;
 }
 
-function getPostsDestination( dependencies ) {
-	return '/posts/' + dependencies.siteSlug;
+function getChecklistDestination( dependencies ) {
+	return '/checklist/' + dependencies.siteSlug;
 }
 
-const flows = generateFlows( { getPostsDestination, getSiteDestination } );
+const flows = generateFlows( { getSiteDestination, getChecklistDestination } );
 
 function removeUserStepFromFlow( flow ) {
 	if ( ! flow ) {
