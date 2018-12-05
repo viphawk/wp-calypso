@@ -160,7 +160,7 @@ export class SignupProcessingScreen extends Component {
 		const { loginHandler } = this.props;
 
 		if ( !! loginHandler ) {
-			this.shouldShowChecklist() ? this.showChecklistAfterLogin() : loginHandler();
+			loginHandler();
 			return null;
 		}
 
