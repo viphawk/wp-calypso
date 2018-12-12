@@ -50,6 +50,7 @@ import {
 import getContactDetailsCache from 'state/selectors/get-contact-details-cache';
 import getUpgradePlanSlugFromPath from 'state/selectors/get-upgrade-plan-slug-from-path';
 import isDomainOnlySite from 'state/selectors/is-domain-only-site';
+import isEligibleForCheckoutToChecklist from 'state/selectors/is-eligible-for-checkout-to-checklist';
 import { getStoredCards } from 'state/stored-cards/selectors';
 import { isValidFeatureKey, getPlan, findPlansKeys } from 'lib/plans';
 import { GROUP_WPCOM } from 'lib/plans/constants';
@@ -394,6 +395,14 @@ export class Checkout extends React.Component {
 			return redirectTo;
 		}
 
+		if ( this.props.isEligibleForCheckoutToChecklist && receipt ) {
+			analytics.tracks.recordEvent( 'calypso_checklist_assign', {
+				site: selectedSiteSlug,
+				plan: 'paid',
+			} );
+			return `/checklist/${ selectedSiteSlug }`;
+		}
+
 		/**
 		 * @TODO Enable when plan setup is completed on the My Plan page
 		 *
@@ -696,6 +705,11 @@ export default connect(
 			isNewlyCreatedSite: isNewSite( state, selectedSiteId ),
 			contactDetails: getContactDetailsCache( state ),
 			userCountryCode: getCurrentUserCountryCode( state ),
+			isEligibleForCheckoutToChecklist: isEligibleForCheckoutToChecklist(
+				state,
+				selectedSiteId,
+				props.cart
+			),
 			productsList: getProductsList( state ),
 			isProductsListFetching: isProductsListFetching( state ),
 			isPlansListFetching: isRequestingPlans( state ),
