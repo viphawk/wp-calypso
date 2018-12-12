@@ -50,7 +50,6 @@ import {
 import getContactDetailsCache from 'state/selectors/get-contact-details-cache';
 import getUpgradePlanSlugFromPath from 'state/selectors/get-upgrade-plan-slug-from-path';
 import isDomainOnlySite from 'state/selectors/is-domain-only-site';
-import isEligibleForCheckoutToChecklist from 'state/selectors/is-eligible-for-checkout-to-checklist';
 import { getStoredCards } from 'state/stored-cards/selectors';
 import { isValidFeatureKey, getPlan, findPlansKeys } from 'lib/plans';
 import { GROUP_WPCOM } from 'lib/plans/constants';
@@ -697,11 +696,6 @@ export default connect(
 			isNewlyCreatedSite: isNewSite( state, selectedSiteId ),
 			contactDetails: getContactDetailsCache( state ),
 			userCountryCode: getCurrentUserCountryCode( state ),
-			isEligibleForCheckoutToChecklist: isEligibleForCheckoutToChecklist(
-				state,
-				selectedSiteId,
-				props.cart
-			),
 			productsList: getProductsList( state ),
 			isProductsListFetching: isProductsListFetching( state ),
 			isPlansListFetching: isRequestingPlans( state ),
