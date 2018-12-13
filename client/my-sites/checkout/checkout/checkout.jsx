@@ -335,7 +335,6 @@ export class Checkout extends React.Component {
 			transaction: {
 				step: { data: receipt },
 			},
-			redirectTo,
 		} = this.props;
 		const domainReceiptId = get(
 			cartItems.getGoogleApps( cart ),
@@ -389,10 +388,6 @@ export class Checkout extends React.Component {
 					}/${ receiptId }`;
 				}
 			}
-		}
-
-		if ( redirectTo ) {
-			return redirectTo;
 		}
 
 		if ( this.props.isEligibleForCheckoutToChecklist && receipt ) {
