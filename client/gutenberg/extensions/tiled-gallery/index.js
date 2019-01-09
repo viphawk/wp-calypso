@@ -18,6 +18,10 @@ import { DEFAULT_LAYOUT, LAYOUT_STYLES } from './constants';
  */
 import './editor.scss';
 
+// 💥
+import foo from './bar';
+foo();
+
 const blockAttributes = {
 	// Set default align
 	align: {
