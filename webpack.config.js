@@ -141,6 +141,7 @@ const es5OnlyNodeModules = [
 	'fbjs/',
 	'css-loader/',
 	'wpcom/',
+	'mapbox-gl/',
 ];
 /**
  * Check to see if we can skip transpiling certain files in node_modules
