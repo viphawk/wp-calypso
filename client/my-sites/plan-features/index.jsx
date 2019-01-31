@@ -328,6 +328,7 @@ export class PlanFeatures extends Component {
 	renderPlanHeaders() {
 		const {
 			basePlansPath,
+			disableBloggerPlanWithNonBlogDomain,
 			displayJetpackPlans,
 			isInSignup,
 			isJetpack,
@@ -350,11 +351,18 @@ export class PlanFeatures extends Component {
 				relatedMonthlyPlan,
 				isPlaceholder,
 				hideMonthly,
+				rawPrice,
 			} = properties;
-			const { rawPrice, discountPrice } = properties;
+			let { discountPrice } = properties;
 			const classes = classNames( 'plan-features__table-item', 'has-border-top' );
 			let audience = planConstantObj.getAudience();
 			let billingTimeFrame = planConstantObj.getBillingTimeFrame();
+
+			if ( disableBloggerPlanWithNonBlogDomain || this.props.nonDotBlogDomains.length > 0 ) {
+				if ( planMatches( planName, { type: TYPE_BLOGGER } ) ) {
+					discountPrice = 0;
+				}
+			}
 
 			if ( isInSignup && ! displayJetpackPlans ) {
 				switch ( siteType ) {
@@ -458,7 +466,7 @@ export class PlanFeatures extends Component {
 			let forceDisplayButton = false,
 				buttonText = null;
 
-			if ( disableBloggerPlanWithNonBlogDomain ) {
+			if ( disableBloggerPlanWithNonBlogDomain || this.props.nonDotBlogDomains.length > 0 ) {
 				if ( planMatches( planName, { type: TYPE_BLOGGER } ) ) {
 					availableForPurchase = false;
 					forceDisplayButton = true;
@@ -562,6 +570,7 @@ export class PlanFeatures extends Component {
 	renderBottomButtons() {
 		const {
 			canPurchase,
+			disableBloggerPlanWithNonBlogDomain,
 			isInSignup,
 			isLandingPage,
 			planProperties,
@@ -570,8 +579,8 @@ export class PlanFeatures extends Component {
 		} = this.props;
 
 		return map( planProperties, properties => {
+			let { availableForPurchase } = properties;
 			const {
-				availableForPurchase,
 				current,
 				onUpgradeClick,
 				planName,
@@ -585,6 +594,13 @@ export class PlanFeatures extends Component {
 				'has-border-bottom',
 				'is-bottom-buttons'
 			);
+
+			if ( disableBloggerPlanWithNonBlogDomain || this.props.nonDotBlogDomains.length > 0 ) {
+				if ( planMatches( planName, { type: TYPE_BLOGGER } ) ) {
+					availableForPurchase = false;
+				}
+			}
+
 			return (
 				<td key={ planName } className={ classes }>
 					<PlanFeaturesActions
