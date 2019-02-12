@@ -74,6 +74,7 @@ import {
 	getStepUrl,
 } from './utils';
 import WpcomLoginForm from './wpcom-login-form';
+import SiteMockups from 'signup/site-mockup';
 
 /**
  * Constants
@@ -623,6 +624,7 @@ class Signup extends React.Component {
 						redirectTo={ this.state.redirectTo }
 					/>
 				) }
+				<SiteMockups />
 			</div>
 		);
 	}
