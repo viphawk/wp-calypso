@@ -27,9 +27,10 @@ import {
 	VALID_MATCH_REASONS,
 } from 'components/domains/domain-registration-suggestion/utility';
 import ProgressBar from 'components/progress-bar';
-import { getDomainPrice } from 'lib/domains';
+import { getDomainPrice, getDomainSalePrice } from 'lib/domains';
 import { getCurrentUserCurrencyCode } from 'state/current-user/selectors';
 import { getProductsList } from 'state/products-list/selectors';
+import Badge from 'components/badge';
 
 const NOTICE_GREEN = '#4ab866';
 
@@ -57,6 +58,7 @@ class DomainRegistrationSuggestion extends React.Component {
 		pendingCheckSuggestion: PropTypes.object,
 		unavailableDomains: PropTypes.array,
 		productCost: PropTypes.string,
+		productSaleCost: PropTypes.string,
 	};
 
 	componentDidMount() {
@@ -170,6 +172,7 @@ class DomainRegistrationSuggestion extends React.Component {
 
 	renderDomain() {
 		const {
+			productSaleCost,
 			suggestion: { domain_name: domain },
 			translate,
 		} = this.props;
@@ -182,8 +185,14 @@ class DomainRegistrationSuggestion extends React.Component {
 		}
 
 		const title = isAvailable ? translate( '%s is available!', { args: domain } ) : domain;
+		const isPaidDomain = 'PRICE' === this.getPriceRule();
 
-		return <h3 className="domain-registration-suggestion__title">{ title }</h3>;
+		return (
+			<div className="domain-registration-suggestion__title-wrapper">
+				<h3 className="domain-registration-suggestion__title">{ title }</h3>
+				{ productSaleCost && isPaidDomain && <Badge>Sale</Badge> }
+			</div>
+		);
 	}
 
 	renderProgressBar() {
@@ -255,6 +264,7 @@ class DomainRegistrationSuggestion extends React.Component {
 			isFeatured,
 			suggestion: { domain_name: domain },
 			productCost,
+			productSaleCost,
 		} = this.props;
 
 		const isUnavailableDomain = this.isUnavailableDomain( domain );
@@ -269,6 +279,7 @@ class DomainRegistrationSuggestion extends React.Component {
 				extraClasses={ extraClasses }
 				priceRule={ this.getPriceRule() }
 				price={ productCost }
+				salePrice={ productSaleCost }
 				domain={ domain }
 				domainsWithPlansOnly={ domainsWithPlansOnly }
 				onButtonClick={ this.onButtonClick }
@@ -284,6 +295,8 @@ class DomainRegistrationSuggestion extends React.Component {
 
 const mapStateToProps = ( state, props ) => {
 	const productSlug = get( props, 'suggestion.product_slug' );
+	const productsList = getProductsList( state );
+	const currentUserCurrencyCode = getCurrentUserCurrencyCode( state );
 
 	return {
 		productCost: getDomainPrice(
@@ -291,6 +304,7 @@ const mapStateToProps = ( state, props ) => {
 			getProductsList( state ),
 			getCurrentUserCurrencyCode( state )
 		),
+		productSaleCost: getDomainSalePrice( productSlug, productsList, currentUserCurrencyCode ),
 	};
 };
 
