@@ -55,7 +55,14 @@ export function getTaxQueryParams() {
 export function getCartQueryParams() {
 	// We could add 'total_cost', 'sub_total', and/or 'total_tax', here if we
 	// wanted to manipulate those values
-	const cartParams = [ 'total_cost_display', 'sub_total_display', 'total_tax_display' ];
+	const cartParams = [
+		'total_cost',
+		'total_cost_display',
+		'sub_total',
+		'sub_total_display',
+		'total_tax',
+		'total_tax_display',
+	];
 	return {
 		...getQueryParams( cartParams ),
 		tax: getTaxQueryParams(),
