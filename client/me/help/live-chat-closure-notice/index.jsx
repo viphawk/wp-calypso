@@ -5,13 +5,15 @@
  */
 
 import React from 'react';
-import i18n, { localize } from 'i18n-calypso';
+import { localize } from 'i18n-calypso';
+import moment from 'moment-timezone';
 
 /**
  * Internal dependencies
  */
 import FoldableCard from 'components/foldable-card';
 import FormSectionHeading from 'components/forms/form-section-heading';
+import withLocalizedMoment from 'components/with-localized-moment';
 
 /**
  * Style dependencies
@@ -28,10 +30,10 @@ const LiveChatClosureNotice = ( {
 	reopensAt,
 	translate,
 } ) => {
-	const currentDate = i18n.moment();
-	const guessedTimezone = i18n.moment.tz.guess();
+	const currentDate = moment();
+	const guessedTimezone = moment.tz.guess();
 
-	if ( ! currentDate.isBetween( i18n.moment( displayAt ), i18n.moment( reopensAt ) ) ) {
+	if ( ! currentDate.isBetween( displayAt, reopensAt ) ) {
 		return null;
 	}
 
@@ -47,8 +49,8 @@ const LiveChatClosureNotice = ( {
 				'You’ll be able to reach us by email and we’ll get back to you as fast as we can. Thank you!',
 			{
 				args: {
-					closesAt: i18n.moment.tz( closesAt, guessedTimezone ).format( DATE_FORMAT ),
-					reopensAt: i18n.moment.tz( reopensAt, guessedTimezone ).format( DATE_FORMAT ),
+					closesAt: moment.tz( closesAt, guessedTimezone ).format( DATE_FORMAT ),
+					reopensAt: moment.tz( reopensAt, guessedTimezone ).format( DATE_FORMAT ),
 					holidayName,
 				},
 			}
@@ -59,7 +61,7 @@ const LiveChatClosureNotice = ( {
 				'You can reach us by email below and we’ll get back to you as fast as we can. Thank you!',
 			{
 				args: {
-					reopensAt: i18n.moment.tz( reopensAt, guessedTimezone ).format( DATE_FORMAT ),
+					reopensAt: moment.tz( reopensAt, guessedTimezone ).format( DATE_FORMAT ),
 					holidayName,
 				},
 			}
@@ -90,4 +92,4 @@ const LiveChatClosureNotice = ( {
 	);
 };
 
-export default localize( LiveChatClosureNotice );
+export default localize( withLocalizedMoment( LiveChatClosureNotice ) );
