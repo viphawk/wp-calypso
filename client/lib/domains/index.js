@@ -291,6 +291,20 @@ function getDomainSalePrice( slug, productsList, currencyCode ) {
 	return formatCurrency( saleCost, currencyCode );
 }
 
+function getDomainTransferSalePrice( slug, productsList, currencyCode ) {
+	const couponValidForDomainTransfer = get(
+		productsList,
+		[ slug, 'sale_coupon', 'allowed_for_domain_transfers' ],
+		null
+	);
+
+	if ( ! couponValidForDomainTransfer ) {
+		return null;
+	}
+
+	return getDomainSalePrice( slug, productsList, currencyCode );
+}
+
 function getAvailableTlds( query = {} ) {
 	return wpcom.undocumented().getAvailableTlds( query );
 }
@@ -351,6 +365,7 @@ export {
 	getDomainPrice,
 	getDomainProductSlug,
 	getDomainSalePrice,
+	getDomainTransferSalePrice,
 	getDomainTypeText,
 	getFixedDomainSearch,
 	getGoogleAppsSupportedDomains,
