@@ -9,12 +9,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { localize, translate } from 'i18n-calypso';
-import { find, isEmpty, omit } from 'lodash';
+import { isEmpty } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import { getSiteStyleOptions, siteStyleOptions } from 'lib/signup/site-styles';
 
 /**
  * Style dependencies
@@ -60,10 +59,6 @@ function fvdToFontWeightAndStyle( fvd ) {
 	const weight = fvd[ 1 ] + '00';
 	const style = fvd[ 0 ] === 'i' ? 'italic' : 'normal';
 	return { weight, style };
-}
-
-function fontNameToId( fontName ) {
-	return fontName.trim().replace( / /g, '+' );
 }
 
 function getFontCssUri( font ) {
@@ -121,8 +116,6 @@ export class SignupSitePreview extends Component {
 	static propTypes = {
 		// The viewport device to show initially
 		defaultViewportDevice: PropTypes.oneOf( [ 'desktop', 'phone' ] ),
-		// External CSS to load
-		cssUrl: PropTypes.string.isRequired,
 		isRtl: PropTypes.bool,
 		langSlug: PropTypes.string,
 		themeSlug: PropTypes.string,
@@ -139,10 +132,11 @@ export class SignupSitePreview extends Component {
 		siteStyle: 'default',
 		siteType: 'business',
 		themeSlug: 'pub/professional-business',
+		content: {},
 	};
 
 	constructor(props) {
-		super(props);
+		super( props );
 		this.iframe = React.createRef();
 		this.state = {
 			loaded: false,
@@ -183,15 +177,14 @@ export class SignupSitePreview extends Component {
 		}
 	}
 
-	setLoaded = () => {
-		this.setState( { loaded: true } );
-	};
+	setLoaded = () => this.setState( { loaded: true } );
 
 	render() {
 		const { font, isDesktop, isPhone, content, isRtl, langSlug, themeSlug } = this.props;
 		const className = classNames( this.props.className, 'signup-site-preview__wrapper', {
 			'is-desktop': isDesktop,
 			'is-phone': isPhone,
+			'is-loading': isEmpty( content.body ),
 		} );
 
 		return (
@@ -212,19 +205,10 @@ export class SignupSitePreview extends Component {
 }
 
 export default connect(
-	( state, ownProps ) => {
-		const styleOptions = getSiteStyleOptions( ownProps.siteType );
-		const style = find( styleOptions, { id: ownProps.siteStyle || 'default' } );
-		return {
-			isDesktop: 'desktop' === ownProps.defaultViewportDevice,
-			isPhone: 'phone' === ownProps.defaultViewportDevice,
-			themeSlug: style.theme,
-			font: {
-				...style.font,
-				id: fontNameToId( style.font.name ),
-			},
-		};
-	},
+	( state, ownProps ) => ( {
+		isDesktop: 'desktop' === ownProps.defaultViewportDevice,
+		isPhone: 'phone' === ownProps.defaultViewportDevice,
+	} ),
 	null
 )( localize( SignupSitePreview ) );
 
