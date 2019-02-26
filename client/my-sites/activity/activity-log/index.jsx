@@ -41,7 +41,7 @@ import QueryJetpackPlugins from 'components/data/query-jetpack-plugins';
 import SidebarNavigation from 'my-sites/sidebar-navigation';
 import SuccessBanner from '../activity-log-banner/success-banner';
 import RewindUnavailabilityNotice from './rewind-unavailability-notice';
-import { adjustMoment } from './utils';
+import { adjustDateOffset } from './utils';
 import { getSelectedSiteId } from 'state/ui/selectors';
 import { getCurrentPlan } from 'state/sites/plans/selectors';
 import { getSiteSlug, getSiteTitle, isJetpackSite } from 'state/sites/selectors';
@@ -152,12 +152,12 @@ class ActivityLog extends Component {
 	 * Adjust a moment by the site timezone or gmt offset. Use the resulting function wherever log
 	 * times need to be formatted for display to ensure all times are displayed as site times.
 	 *
-	 * @param   {object} moment Moment to adjust.
-	 * @returns {object}        Moment adjusted for site timezone or gmtOffset.
+	 * @param   {object} date Moment to adjust.
+	 * @returns {Moment}      Moment adjusted for site timezone or gmtOffset.
 	 */
-	applySiteOffset = moment => {
+	applySiteOffset = date => {
 		const { timezone, gmtOffset } = this.props;
-		return adjustMoment( { timezone, gmtOffset, moment } );
+		return adjustDateOffset( date, { timezone, gmtOffset } );
 	};
 
 	changePage = pageNumber => {
@@ -375,11 +375,11 @@ class ActivityLog extends Component {
 		const theseLogs = logs.slice( ( actualPage - 1 ) * PAGE_SIZE, actualPage * PAGE_SIZE );
 
 		const timePeriod = ( () => {
-			const today = this.applySiteOffset( moment.utc( Date.now() ) );
+			const today = this.applySiteOffset( moment() );
 			let last = null;
 
 			return ( { rewindId } ) => {
-				const ts = this.applySiteOffset( moment.utc( rewindId * 1000 ) );
+				const ts = this.applySiteOffset( moment( rewindId * 1000 ) );
 
 				if ( null === last || ! ts.isSame( last, 'day' ) ) {
 					last = ts;

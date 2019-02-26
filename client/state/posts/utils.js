@@ -778,19 +778,3 @@ export const getFeaturedImageId = function( post ) {
 		return post.post_thumbnail.ID;
 	}
 };
-
-/**
- * Return date with timezone offset.
- * If `date` is not defined it returns `now`.
- *
- * @param {String|Date} date - date
- * @param {String} tz - timezone
- * @return {Moment} moment instance
- */
-export const getOffsetDate = function( date, tz ) {
-	if ( ! tz ) {
-		return moment( date );
-	}
-
-	return moment( moment.tz( date, tz ) );
-};

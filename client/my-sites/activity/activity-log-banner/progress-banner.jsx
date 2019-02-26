@@ -50,7 +50,7 @@ function ProgressBanner( {
 	let description = '';
 	let statusMessage = '';
 
-	const dateTime = applySiteOffset( moment.utc( ms( timestamp ) ) ).format( 'LLLL' );
+	const dateTime = applySiteOffset( moment( ms( timestamp ) ) ).format( 'LLLL' );
 
 	switch ( action ) {
 		case 'restore':

@@ -84,7 +84,7 @@ class SuccessBanner extends PureComponent {
 			trackHappyChatBackup,
 			trackHappyChatRestore,
 		} = this.props;
-		const date = applySiteOffset( moment.utc( ms( timestamp ) ) ).format( 'LLLL' );
+		const date = applySiteOffset( moment( ms( timestamp ) ) ).format( 'LLLL' );
 		const params = backupUrl
 			? {
 					title: translate( 'Your backup is now available for download' ),

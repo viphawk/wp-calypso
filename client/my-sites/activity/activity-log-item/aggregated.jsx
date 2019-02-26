@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -7,15 +6,16 @@ import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 import { omit } from 'lodash';
 import React, { Component, Fragment } from 'react';
+
 /**
  * Internal dependencies
  */
 import ActivityDescription from './activity-description';
 import ActivityIcon from './activity-icon';
 import ActivityLogItem from '../activity-log-item';
-import { adjustMoment } from '../activity-log/utils';
+import { adjustDateOffset } from '../activity-log/utils';
 import FoldableCard from 'components/foldable-card';
-import { getSite } from 'state/sites/selectors';
+import { getSiteSlug } from 'state/sites/selectors';
 import getSiteGmtOffset from 'state/selectors/get-site-gmt-offset';
 import getSiteTimezoneValue from 'state/selectors/get-site-timezone-value';
 import Button from '../../../components/button';
@@ -34,14 +34,13 @@ class ActivityLogAggregatedItem extends Component {
 		const {
 			activity: { firstPublishedDate, lastPublishedDate },
 			filter,
-			moment,
 			timezone,
 		} = this.props;
 		const newFilter = Object.assign( {}, omit( filter, [ 'dateRange', 'on' ] ), {
-			before: adjustMoment( { timezone, moment: moment( firstPublishedDate ) } )
+			before: adjustDateOffset( firstPublishedDate, { timezone } )
 				.add( 1, 'second' )
 				.format(),
-			after: adjustMoment( { timezone, moment: moment( lastPublishedDate ) } )
+			after: adjustDateOffset( lastPublishedDate, { timezone } )
 				.subtract( 1, 'second' )
 				.format(),
 			aggregate: false,
@@ -51,6 +50,7 @@ class ActivityLogAggregatedItem extends Component {
 
 		return addQueryArgs( query, window.location.pathname + window.location.hash );
 	}
+
 	trackClick = intent => {
 		const { activity } = this.props;
 		const section = activity.activityGroup;
@@ -128,14 +128,13 @@ class ActivityLogAggregatedItem extends Component {
 			disableBackup,
 			disableRestore,
 			gmtOffset,
-			moment,
 			rewindState,
 			siteId,
 			timezone,
 			translate,
 		} = this.props;
 		const { activityIcon, activityStatus, activityTs, streamCount } = activity;
-		const adjustedTime = adjustMoment( { gmtOffset, moment: moment.utc( activityTs ), timezone } );
+		const adjustedTime = adjustDateOffset( activityTs, { gmtOffset, timezone } );
 		const classes = classNames( 'activity-log-item', 'is-aggregated' );
 		return (
 			<div className={ classes }>
@@ -185,15 +184,11 @@ class ActivityLogAggregatedItem extends Component {
 	}
 }
 
-const mapStateToProps = ( state, { activity, siteId } ) => {
-	const site = getSite( state, siteId );
-
+const mapStateToProps = ( state, { siteId } ) => {
 	return {
-		activity,
 		gmtOffset: getSiteGmtOffset( state, siteId ),
 		timezone: getSiteTimezoneValue( state, siteId ),
-		siteSlug: site.slug,
-		site,
+		siteSlug: getSiteSlug( state, siteId ),
 		filter: getActivityLogFilter( state, siteId ),
 	};
 };

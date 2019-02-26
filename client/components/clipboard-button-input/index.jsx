@@ -7,7 +7,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { omit } from 'lodash';
+import { omit, flowRight as compose } from 'lodash';
 import { localize } from 'i18n-calypso';
 import { connect } from 'react-redux';
 
@@ -17,6 +17,7 @@ import { connect } from 'react-redux';
 import { withoutHttp } from 'lib/url';
 import ClipboardButton from 'components/forms/clipboard-button';
 import FormTextInput from 'components/forms/form-text-input';
+import withLocalizedMoment from 'components/with-localized-moment';
 import { recordTracksEvent } from 'state/analytics/actions';
 
 /**
@@ -48,7 +49,6 @@ class ClipboardButtonInputExport extends React.Component {
 
 	componentWillUnmount() {
 		clearTimeout( this.confirmationTimeout );
-		delete this.confirmationTimeout;
 	}
 
 	showConfirmation = () => {
@@ -100,9 +100,11 @@ class ClipboardButtonInputExport extends React.Component {
 	}
 }
 
-export default connect(
-	null,
-	{
-		recordTracksEvent,
-	}
-)( localize( ClipboardButtonInputExport ) );
+export default compose(
+	connect(
+		null,
+		{ recordTracksEvent }
+	),
+	localize,
+	withLocalizedMoment
+)( ClipboardButtonInputExport );

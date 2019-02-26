@@ -3,7 +3,6 @@
  */
 
 import React, { Component } from 'react';
-import { localize } from 'i18n-calypso';
 import { connect } from 'react-redux';
 
 /**
@@ -44,7 +43,5 @@ class ProfileGravatar extends Component {
 
 export default connect(
 	null,
-	{
-		recordGoogleEvent,
-	}
-)( localize( ProfileGravatar ) );
+	{ recordGoogleEvent }
+)( ProfileGravatar );

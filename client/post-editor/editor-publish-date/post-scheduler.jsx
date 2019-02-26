@@ -6,6 +6,7 @@ import React, { Fragment, PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
+import moment from 'moment-timezone';
 
 /**
  * Internal dependencies
@@ -39,36 +40,20 @@ export default class PostScheduler extends PureComponent {
 		site: PropTypes.object,
 	};
 
-	state = {
-		firstDayOfTheMonth: this.getFirstDayOfTheMonth( this.props.initialDate ),
-		lastDayOfTheMonth: this.getLastDayOfTheMonth( this.props.initialDate ),
-	};
+	state = this.getFirstAndLastDayOfTheMonth( this.props.initialDate );
 
-	getFirstDayOfTheMonth( date ) {
+	getFirstAndLastDayOfTheMonth( date ) {
 		const tz = timezone( this.props.site );
+		const tzDate = tz ? moment.tz( date, tz ) : moment( date );
 
-		return postUtils.getOffsetDate( date, tz ).set( {
-			year: date.year(),
-			month: date.month(),
-			date: 1,
-			hours: 0,
-			minutes: 0,
-			seconds: 0,
-			milliseconds: 0,
-		} );
-	}
-
-	getLastDayOfTheMonth( date ) {
-		return this.getFirstDayOfTheMonth( date )
-			.add( 1, 'month' )
-			.second( -1 );
+		return {
+			firstDayOfTheMonth: tzDate.clone().startOf( 'month' ),
+			lastDayOfTheMonth: tzDate.clone().endOf( 'month' ),
+		};
 	}
 
 	setCurrentMonth = date => {
-		this.setState( {
-			firstDayOfTheMonth: this.getFirstDayOfTheMonth( date ),
-			lastDayOfTheMonth: this.getLastDayOfTheMonth( date ),
-		} );
+		this.setState( this.getFirstAndLastDayOfTheMonth( date ) );
 	};
 
 	render() {

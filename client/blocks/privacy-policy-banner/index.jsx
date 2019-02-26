@@ -89,7 +89,7 @@ class PrivacyPolicyBanner extends Component {
 
 		return translate( "We're updating our privacy policy on %(date)s.", {
 			args: {
-				date: moment.utc( date ).format( 'LL' ),
+				date: moment( date ).format( 'LL' ),
 			},
 		} );
 	}
@@ -120,8 +120,8 @@ class PrivacyPolicyBanner extends Component {
 			}
 
 			// check if the current policy is under the notification period.
-			const notifyFrom = moment.utc( get( privacyPolicy, 'notification_period.from' ) );
-			const notifyTo = moment.utc( get( privacyPolicy, 'notification_period.to' ) );
+			const notifyFrom = moment( get( privacyPolicy, 'notification_period.from' ) );
+			const notifyTo = moment( get( privacyPolicy, 'notification_period.to' ) );
 
 			if ( ! moment().isBetween( notifyFrom, notifyTo ) ) {
 				return null;

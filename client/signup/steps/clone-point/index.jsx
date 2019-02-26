@@ -19,7 +19,7 @@ import SignupActions from 'lib/signup/actions';
 import StepWrapper from 'signup/step-wrapper';
 import Tile from 'components/tile-grid/tile';
 import TileGrid from 'components/tile-grid';
-import { adjustMoment } from 'my-sites/activity/activity-log/utils';
+import { adjustDateOffset } from 'my-sites/activity/activity-log/utils';
 import { requestActivityLogs } from 'state/data-getters';
 import { withLocalizedMoment } from 'components/localized-moment';
 
@@ -65,9 +65,9 @@ class ClonePointStep extends Component {
 		this.setState( { showLog: true } );
 	};
 
-	applySiteOffset = moment => {
+	applySiteOffset = date => {
 		const { timezone, gmtOffset } = this.props;
-		return adjustMoment( { timezone, gmtOffset, moment } );
+		return adjustDateOffset( date, { timezone, gmtOffset } );
 	};
 
 	changePage = pageNumber => {
@@ -86,11 +86,11 @@ class ClonePointStep extends Component {
 		const theseLogs = logs.slice( ( actualPage - 1 ) * PAGE_SIZE, actualPage * PAGE_SIZE );
 
 		const timePeriod = ( () => {
-			const today = this.applySiteOffset( moment.utc( Date.now() ) );
+			const today = this.applySiteOffset( moment() );
 			let last = null;
 
 			return ( { rewindId } ) => {
-				const ts = this.applySiteOffset( moment.utc( rewindId * 1000 ) );
+				const ts = this.applySiteOffset( moment( rewindId * 1000 ) );
 
 				if ( null === last || ! ts.isSame( last, 'day' ) ) {
 					last = ts;
