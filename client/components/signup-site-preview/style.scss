@@ -12,6 +12,14 @@
 	position: relative;
 	overflow: hidden;
 	border-radius: 4px;
+
+	.is-desktop & {
+		border-radius: 4px;
+	}
+
+	.is-phone & {
+		border-radius: 12px;
+	}
 }
 
 .signup-site-preview__iframe {
@@ -44,7 +52,6 @@
 		top: 7px;
 		right: 0;
 		left: 0;
-
 		margin: 0 auto;
 		font-size: 11px;
 		text-align: center;
@@ -79,7 +86,7 @@
 		// text as its mostly redundent.
 		@include breakpoint( '<660px' ) {
 			color: var( --color-neutral-0 );
-			width: 180px;
+			width: 96%;
 		}
 	}
 }

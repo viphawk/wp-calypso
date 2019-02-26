@@ -135,7 +135,7 @@ export class SignupSitePreview extends Component {
 		content: {},
 	};
 
-	constructor(props) {
+	constructor( props ) {
 		super( props );
 		this.iframe = React.createRef();
 		this.state = {
@@ -177,14 +177,12 @@ export class SignupSitePreview extends Component {
 		}
 	}
 
-	setLoaded = () => this.setState( { loaded: true } );
-
 	render() {
 		const { font, isDesktop, isPhone, content, isRtl, langSlug, themeSlug } = this.props;
 		const className = classNames( this.props.className, 'signup-site-preview__wrapper', {
 			'is-desktop': isDesktop,
 			'is-phone': isPhone,
-			'is-loading': isEmpty( content.body ),
+			'is-empty': isEmpty( content.body ),
 		} );
 
 		return (
