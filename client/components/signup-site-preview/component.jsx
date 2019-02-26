@@ -8,18 +8,19 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+import { localize, translate } from 'i18n-calypso';
+import { find, isEmpty, omit } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import { localize, translate } from 'i18n-calypso';
+import { getSiteStyleOptions, siteStyleOptions } from 'lib/signup/site-styles';
 
 /**
  * Style dependencies
  */
 import './style.scss';
-import {omit} from "lodash";
-import {shallowEquals} from "../../reader/utils";
+
 
 /* TODO @ramonopoly
 	// preload Google fonts
@@ -54,18 +55,40 @@ function MockupChromeDesktop() {
 	);
 }
 
+// fonts and CSS
+function fvdToFontWeightAndStyle( fvd ) {
+	const weight = fvd[ 1 ] + '00';
+	const style = fvd[ 0 ] === 'i' ? 'italic' : 'normal';
+	return { weight, style };
+}
+
+function fontNameToId( fontName ) {
+	return fontName.trim().replace( / /g, '+' );
+}
+
+function getFontCssUri( font ) {
+	const base = 'https://fonts.googleapis.com/css?family=';
+	const variations = font.variations.reduce( ( result, variation ) => {
+		const { weight, style } = fvdToFontWeightAndStyle( variation );
+		const suffix = style === 'italic' ? 'italic' : '';
+		result.push( weight + suffix );
+		return result;
+	}, [] );
+	return `${ base }${ font.id }:${ variations.join( ',' ) }`;
+}
+
 function getIframeCssUri( themeSlug, isRtl ) {
 	return `https://s0.wp.com/wp-content/themes/${ themeSlug }/style${ isRtl ? '-rtl' : '' }.css`;
 }
 
-function getIframeSource( content, isRtl, langSlug, themeSlug ) {
+function getIframeSource( content, isRtl, langSlug, themeSlug, font ) {
 	const source = `
 		<html lang="${ langSlug }" dir="${ isRtl ? 'rtl' : 'ltr' }">
 		<head>
 			<title>${ content.title } – ${ content.tagline }</title>
 			<link type="text/css" media="all" rel="stylesheet" href="https://s0.wp.com/wp-content/plugins/gutenberg-core/build/block-library/style.css" />
 			<link type="text/css" media="all" rel="stylesheet" href="${ getIframeCssUri( themeSlug, isRtl ) }" />
-			<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Crimson+Text%3A400%2C600%2C700%2C400italic%2C600italic&#038;subset=latin%2Clatin-ext" type="text/css" media="all" />
+			<link type="text/css" media="all" rel="stylesheet" href="${ getFontCssUri( font ) }" />
 		</head>
 		<body class="home page-template-default page logged-in">
 			<div id="page" class="site">
@@ -103,6 +126,8 @@ export class SignupSitePreview extends Component {
 		isRtl: PropTypes.bool,
 		langSlug: PropTypes.string,
 		themeSlug: PropTypes.string,
+		siteStyle: PropTypes.string,
+		siteType: PropTypes.string,
 		// Iframe body content
 		content: PropTypes.object,
 	};
@@ -111,6 +136,8 @@ export class SignupSitePreview extends Component {
 		defaultViewportDevice: 'desktop',
 		isRtl: false,
 		langSlug: 'en',
+		siteStyle: 'default',
+		siteType: 'business',
 		themeSlug: 'pub/professional-business',
 	};
 
@@ -135,35 +162,16 @@ export class SignupSitePreview extends Component {
 			return true;
 		}
 
+		if ( this.props.siteStyle !== nextProps.siteStyle ) {
+			return true;
+		}
+
+		if ( this.props.content.body !== nextProps.content.body ) {
+			this.setIframeContent( '.entry-content', nextProps.content.body );
+		}
+
 		return false;
 	}
-
-
-
-/*	componentDidUpdate( prevProps ) {
-		this.setIframeCss();
-		this.setIframeContent( getIframeContent( this.props.content ) );
-	}
-
-	setIframeContent( content ) {
-		if ( ! this.iframe ) {
-			return;
-		}
-		this.iframe.contentDocument.open();
-		this.iframe.contentDocument.write( content );
-		this.iframe.contentDocument.close();
-	}
-
-	setIframeCss() {
-		if ( ! this.iframe ) {
-			return;
-		}
-		const cssLink = document.createElement( 'link' );
-		cssLink.href = 'https://s0.wp.com/wp-content/themes/pub/professional-business/style.css';
-		cssLink.rel = 'stylesheet';
-		cssLink.type = 'text/css';
-		this.iframe.document.head.appendChild( cssLink );
-	}*/
 
 	setIframeContent( selector, content ) {
 		if ( ! this.iframe.current ) {
@@ -180,7 +188,7 @@ export class SignupSitePreview extends Component {
 	};
 
 	render() {
-		const { isDesktop, isPhone, content, isRtl, langSlug, themeSlug } = this.props;
+		const { font, isDesktop, isPhone, content, isRtl, langSlug, themeSlug } = this.props;
 		const className = classNames( this.props.className, 'signup-site-preview__wrapper', {
 			'is-desktop': isDesktop,
 			'is-phone': isPhone,
@@ -193,8 +201,9 @@ export class SignupSitePreview extends Component {
 					<iframe
 						ref={ this.iframe }
 						className="signup-site-preview__iframe"
-						src={ getIframeSource( content, isRtl, langSlug, themeSlug ) }
+						src={ getIframeSource( content, isRtl, langSlug, themeSlug, font ) }
 						title={ `${ content.title } – ${ content.tagline }` }
+						onLoad={ this.setLoaded }
 					/>
 				</div>
 			</div>
@@ -203,9 +212,20 @@ export class SignupSitePreview extends Component {
 }
 
 export default connect(
-	( state, ownProps ) => ( {
-		isDesktop: 'desktop' === ownProps.defaultViewportDevice,
-		isPhone: 'phone' === ownProps.defaultViewportDevice,
-	} ),
+	( state, ownProps ) => {
+		const styleOptions = getSiteStyleOptions( ownProps.siteType );
+		const style = find( styleOptions, { id: ownProps.siteStyle || 'default' } );
+		return {
+			isDesktop: 'desktop' === ownProps.defaultViewportDevice,
+			isPhone: 'phone' === ownProps.defaultViewportDevice,
+			themeSlug: style.theme,
+			font: {
+				...style.font,
+				id: fontNameToId( style.font.name ),
+			},
+		};
+	},
 	null
 )( localize( SignupSitePreview ) );
+
+

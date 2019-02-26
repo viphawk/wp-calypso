@@ -137,7 +137,7 @@ class SiteMockups extends Component {
 	}
 
 	render() {
-		const { siteStyle, siteType, title, verticalPreviewContent } = this.props;
+		const { siteStyle, siteType, title, verticalName, verticalPreviewContent } = this.props;
 		const siteMockupClasses = classNames( {
 			'site-mockup__wrap': true,
 			'is-empty': isEmpty( verticalPreviewContent ),
@@ -152,6 +152,7 @@ class SiteMockups extends Component {
 			},
 			siteType,
 			siteStyle,
+			verticalName,
 		};
 		//const fontStyle = getCSS( `.site-mockup__content`, siteStyle, siteType );
 
@@ -169,7 +170,6 @@ class SiteMockups extends Component {
 }
 
 export default connect( state => {
-	const vertical = getSiteVerticalName( state );
 	const siteInformation = getSiteInformation( state );
 	return {
 		title: siteInformation.title || translate( 'Your New Website' ),
@@ -177,7 +177,7 @@ export default connect( state => {
 		phone: siteInformation.phone,
 		siteStyle: getSiteStyle( state ),
 		siteType: getSiteType( state ),
-		vertical,
+		verticalName: getSiteVerticalName( state ),
 		verticalPreviewContent: getSiteVerticalPreview( state ),
 	};
 } )( SiteMockups );
