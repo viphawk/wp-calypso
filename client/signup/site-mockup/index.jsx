@@ -98,8 +98,7 @@ class SiteMockups extends Component {
 
 	render() {
 		const { font, siteStyle, siteType, title, themeSlug, verticalName, verticalPreviewContent } = this.props;
-		const siteMockupClasses = classNames( {
-			'site-mockup__wrap': true,
+		const siteMockupClasses = classNames( 'site-mockup__wrap', {
 			'is-empty': isEmpty( verticalPreviewContent ),
 		} );
 		const otherProps = {
