@@ -165,4 +165,12 @@ export default {
 		},
 		defaultVariation: 'featured',
 	},
+	pluginRecommendations: {
+		datestamp: '20190301',
+		variations: {
+			featured: 50,
+			recommended: 50,
+		},
+		defaultVariation: 'featured',
+	},
 };
