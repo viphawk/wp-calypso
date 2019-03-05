@@ -27,7 +27,11 @@ import getCurrentRoute from 'state/selectors/get-current-route';
 import getPostTypeTrashUrl from 'state/selectors/get-post-type-trash-url';
 import getPostTypeAllPostsUrl from 'state/selectors/get-post-type-all-posts-url';
 import wpcom from 'lib/wp';
+import EditorRevisionsDialog from 'post-editor/editor-revisions/dialog';
+import { openPostRevisionsDialog } from 'state/posts/revisions/actions';
+import { startEditingPost } from 'state/ui/editor/actions';
 import { Placeholder } from './placeholder';
+import { trashPost } from 'state/posts/actions';
 
 /**
  * Style dependencies
@@ -39,6 +43,7 @@ class CalypsoifyIframe extends Component {
 		postId: PropTypes.number,
 		postType: PropTypes.string,
 		duplicatePostId: PropTypes.number,
+		pressThis: PropTypes.object,
 	};
 
 	state = {
@@ -81,8 +86,8 @@ class CalypsoifyIframe extends Component {
 				portForIframe,
 			] );
 
-			//once the iframe is loaded and the port exchanged, we no longer need to listen for message
-			window.removeEventListener( 'message', this.onMessage, false );
+			// Check if we're generating a post via Press This
+			this.pressThis();
 		}
 	};
 
@@ -107,21 +112,41 @@ class CalypsoifyIframe extends Component {
 
 		if ( 'draftIdSet' === action && ! this.props.postId ) {
 			const { postId } = payload;
-			const { currentRoute } = this.props;
+			const { siteId, currentRoute } = this.props;
 
 			if ( ! endsWith( currentRoute, `/${ postId }` ) ) {
 				this.props.replaceHistory( `${ currentRoute }/${ postId }`, true );
 				this.props.setRoute( `${ currentRoute }/${ postId }` );
+
+				//set postId on state.ui.editor.postId, so components like editor revisions can read from it
+				this.props.startEditingPost( siteId, postId );
 			}
 		}
 
-		if ( 'postTrashed' === action ) {
-			this.props.navigate( this.props.postTypeTrashUrl );
+		if ( 'trashPost' === action ) {
+			const { siteId, postId, postTypeTrashUrl } = this.props;
+			this.props.trashPost( siteId, postId );
+			this.props.navigate( postTypeTrashUrl );
 		}
 
 		if ( 'goToAllPosts' === action ) {
 			this.props.navigate( this.props.allPostsUrl );
 		}
+
+		if ( 'openRevisions' === action ) {
+			this.props.openPostRevisionsDialog();
+		}
+	};
+
+	loadRevision = revision => {
+		this.iframePort.postMessage( {
+			action: 'loadRevision',
+			payload: {
+				title: revision.post_title,
+				excerpt: revision.post_excerpt,
+				content: revision.post_content,
+			},
+		} );
 	};
 
 	closeMediaModal = media => {
@@ -137,6 +162,16 @@ class CalypsoifyIframe extends Component {
 		}
 
 		this.setState( { isMediaModalVisible: false } );
+	};
+
+	pressThis = () => {
+		const { pressThis } = this.props;
+		if ( pressThis ) {
+			this.iframePort.postMessage( {
+				action: 'pressThis',
+				payload: pressThis,
+			} );
+		}
 	};
 
 	render() {
@@ -168,6 +203,7 @@ class CalypsoifyIframe extends Component {
 						visible={ isMediaModalVisible }
 					/>
 				</MediaLibrarySelectedData>
+				<EditorRevisionsDialog loadRevision={ this.loadRevision } />
 			</Fragment>
 		);
 	}
@@ -187,6 +223,7 @@ const mapStateToProps = ( state, { postId, postType, duplicatePostId } ) => {
 		'block-editor': 1,
 		'frame-nonce': getSiteOption( state, siteId, 'frame_nonce' ) || '',
 		'jetpack-copy': duplicatePostId,
+		origin: window.location.origin,
 	} );
 
 	// needed for loading the editor in SU sessions
@@ -213,6 +250,9 @@ const mapDispatchToProps = {
 	replaceHistory,
 	setRoute,
 	navigate,
+	openPostRevisionsDialog,
+	startEditingPost,
+	trashPost,
 };
 
 export default connect(
