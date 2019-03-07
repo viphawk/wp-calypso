@@ -3293,15 +3293,15 @@
       "integrity": "sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg=="
     },
     "autoprefixer": {
-      "version": "9.4.4",
-      "resolved": "https://registry.npmjs.org/autoprefixer/-/autoprefixer-9.4.4.tgz",
-      "integrity": "sha512-7tpjBadJyHKf+gOJEmKhZIksWxdZCSrnKbbTJNsw+/zX9+f//DLELRQPWjjjVoDbbWlCuNRkN7RfmZwDVgWMLw==",
+      "version": "9.4.10",
+      "resolved": "https://registry.npmjs.org/autoprefixer/-/autoprefixer-9.4.10.tgz",
+      "integrity": "sha512-XR8XZ09tUrrSzgSlys4+hy5r2/z4Jp7Ag3pHm31U4g/CTccYPOVe19AkaJ4ey/vRd1sfj+5TtuD6I0PXtutjvQ==",
       "requires": {
-        "browserslist": "^4.3.7",
-        "caniuse-lite": "^1.0.30000926",
+        "browserslist": "^4.4.2",
+        "caniuse-lite": "^1.0.30000940",
         "normalize-range": "^0.1.2",
         "num2fraction": "^1.2.2",
-        "postcss": "^7.0.7",
+        "postcss": "^7.0.14",
         "postcss-value-parser": "^3.3.1"
       }
     },
