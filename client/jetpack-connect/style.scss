@@ -777,3 +777,13 @@ $colophon-height: 50px;
 .jetpack-connect__connect-button {
 	text-align: center;
 }
+
+.jetpack-connect__skip-button {
+	text-align: center;
+	margin: 17px 0;
+
+	.button .gridicon {
+		padding-left: 4px;
+		margin-right: -5px;
+	}
+}
