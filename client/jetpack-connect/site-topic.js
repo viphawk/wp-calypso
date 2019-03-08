@@ -13,6 +13,7 @@ import { localize } from 'i18n-calypso';
 import FormattedHeader from 'components/formatted-header';
 import jetpackOnly from './jetpack-only';
 import MainWrapper from './main-wrapper';
+import SkipButton from './skip-button';
 import SiteTopicForm from 'signup/steps/site-topic/form';
 import withTrackingTool from 'lib/analytics/with-tracking-tool';
 import WpcomColophon from 'components/wpcom-colophon';
@@ -20,13 +21,19 @@ import { getSelectedSiteId, getSelectedSiteSlug } from 'state/ui/selectors';
 import { saveSiteVertical } from 'state/jetpack-connect/actions';
 
 class JetpackSiteTopic extends Component {
+	goToNextStep = () => {
+		const { siteSlug } = this.props;
+
+		page.redirect( `/jetpack/connect/plans/${ siteSlug }` );
+	};
+
 	handleSubmit = ( { name, slug } ) => {
-		const { siteId, siteSlug } = this.props;
+		const { siteId } = this.props;
 		const siteVertical = name || slug || '';
 
 		this.props.saveSiteVertical( siteId, siteVertical );
 
-		page.redirect( `/jetpack/connect/plans/${ siteSlug }` );
+		this.goToNextStep();
 	};
 
 	render() {
@@ -43,6 +50,8 @@ class JetpackSiteTopic extends Component {
 					/>
 
 					<SiteTopicForm submitForm={ this.handleSubmit } />
+
+					<SkipButton onClick={ this.goToNextStep } />
 
 					<WpcomColophon />
 				</div>
