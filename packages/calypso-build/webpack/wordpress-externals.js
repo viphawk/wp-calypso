@@ -24,6 +24,4 @@ const wordpressExternals = ( context, request, callback ) =>
 		? callback( null, `root ${ wordpressRequire( request ) }` )
 		: callback();
 
-module.exports = () => ( {
-	wordpressExternals: wordpressExternals,
-} );
+module.exports = wordpressExternals;
