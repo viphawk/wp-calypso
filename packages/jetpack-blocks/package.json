@@ -9,7 +9,7 @@
   "dependencies": {
     "@automattic/format-currency": "file:../format-currency",
     "@babel/polyfill": "^7.2.5",
-    "@wordpress/api-fetch": "^2.2.8",
+    "@wordpress/api-fetch": "^3.0.0",
     "@wordpress/blob": "^2.1.0",
     "@wordpress/blocks": "^6.0.7",
     "@wordpress/components": "^7.0.8",
