@@ -10,6 +10,7 @@ const webpack = require( 'webpack' );
 const { compact, get } = require( 'lodash' );
 
 const watchMode = process.argv.includes( '--watch' ) | process.argv.includes( '-w' );
+const testBuild = process.argv.includes( '--test-build' );
 
 const editorSetup = path.join( __dirname, '..', 'src', 'preset', 'setup', 'editor' );
 const viewSetup = path.join( __dirname, '..', 'src', 'preset', 'setup', 'view' );
@@ -83,11 +84,13 @@ const makeConfig = () => {
 					},
 				] ),
 		] ),
-		entry: {
-			editor: editorScript,
-			...( editorBetaScript && { 'editor-beta': editorBetaScript } ),
-			...viewBlocksScripts,
-		},
+		entry: testBuild
+			? { test: path.join( __dirname, '..', 'test', 'fixtures', 'test-build' ) }
+			: {
+					editor: editorScript,
+					...( editorBetaScript && { 'editor-beta': editorBetaScript } ),
+					...viewBlocksScripts,
+			  },
 		output: {
 			path: path.join( __dirname, '..', 'dist' ),
 			filename: '[name].js',
