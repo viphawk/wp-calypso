@@ -19,9 +19,7 @@ const wordpressRequire = request => {
 	return `wp.${ name.replace( /-([a-z])/g, ( match, letter ) => letter.toUpperCase() ) }`;
 };
 
-const wordpressExternals = ( context, request, callback ) =>
+module.exports = ( context, request, callback ) =>
 	/^@wordpress\//.test( request )
 		? callback( null, `root ${ wordpressRequire( request ) }` )
 		: callback();
-
-module.exports = wordpressExternals;
