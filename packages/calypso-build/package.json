@@ -22,7 +22,7 @@
 		"url": "https://github.com/Automattic/wp-calypso/issues"
 	},
 	"dependencies": {
-		"autoprefixer": "9.4.4",
+		"autoprefixer": "9.4.10",
 		"babel-loader": "8.0.5",
 		"css-loader": "2.1.1",
 		"mini-css-extract-plugin-with-rtl": "github:Automattic/mini-css-extract-plugin-with-rtl",
@@ -31,6 +31,6 @@
 		"sass-loader": "7.1.0",
 		"thread-loader": "2.1.2",
 		"webpack-filter-warnings-plugin": "1.2.1",
-		"webpack-rtl-plugin": "1.8.0"
+		"webpack-rtl-plugin": "1.8.2"
 	}
 }
