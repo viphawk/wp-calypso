@@ -16,6 +16,12 @@ import SuggestionSearch from 'components/suggestion-search';
 import { getHttpData, requestHttpData } from 'state/data-layer/http-data';
 import { http } from 'state/data-layer/wpcom-http/actions';
 import { convertToCamelCase } from 'state/data-layer/utils';
+import CommonTopics from 'components/site-verticals-suggestion-search/common-topics';
+
+/**
+ * Style dependencies
+ */
+import './style.scss';
 
 export class SiteVerticalsSuggestionSearch extends Component {
 	static propTypes = {
@@ -86,8 +92,6 @@ export class SiteVerticalsSuggestionSearch extends Component {
 		);
 
 	onSiteTopicChange = value => {
-		value = trim( value );
-
 		const hasValue = !! value;
 		const valueLength = value.length || 0;
 		const valueLengthShouldTriggerSearch = valueLength >= this.props.charsToTriggerSearch;
@@ -110,6 +114,11 @@ export class SiteVerticalsSuggestionSearch extends Component {
 
 		this.setState( { searchValue: value } );
 		this.updateVerticalData( result, value );
+	};
+
+	onCommonTopicSelect = value => {
+		this.props.requestVerticals( value, 1 );
+		this.setState( { searchValue: value } );
 	};
 
 	getSuggestions = () => this.props.verticals.map( vertical => vertical.verticalName );
@@ -141,15 +150,18 @@ export class SiteVerticalsSuggestionSearch extends Component {
 	render() {
 		const { translate, placeholder, autoFocus } = this.props;
 		return (
-			<SuggestionSearch
-				id="siteTopic"
-				placeholder={ placeholder || translate( 'e.g. Fashion, travel, design, plumbing' ) }
-				onChange={ this.onSiteTopicChange }
-				suggestions={ this.getSuggestions() }
-				value={ this.state.searchValue }
-				sortResults={ this.sortSearchResults }
-				autoFocus={ autoFocus } // eslint-disable-line jsx-a11y/no-autofocus
-			/>
+			<>
+				<SuggestionSearch
+					id="siteTopic"
+					placeholder={ placeholder || translate( 'e.g. Fashion, travel, design, plumbing' ) }
+					onChange={ this.onSiteTopicChange }
+					suggestions={ this.getSuggestions() }
+					value={ this.state.searchValue }
+					sortResults={ this.sortSearchResults }
+					autoFocus={ autoFocus } // eslint-disable-line jsx-a11y/no-autofocus
+				/>
+				{ ! this.state.searchValue && <CommonTopics onSelect={ this.onCommonTopicSelect } /> }
+			</>
 		);
 	}
 }
@@ -157,7 +169,8 @@ export class SiteVerticalsSuggestionSearch extends Component {
 const SITE_VERTICALS_REQUEST_ID = 'site-verticals-search-results';
 const DEFAULT_SITE_VERTICAL_REQUEST_ID = 'default-site-verticals-search-results';
 
-const requestSiteVerticalHttpData = ( searchTerm, limit = 5, id = SITE_VERTICALS_REQUEST_ID ) =>
+const requestSiteVerticalHttpData = ( searchTerm, limit = 5, id = SITE_VERTICALS_REQUEST_ID ) => {
+	searchTerm = trim( searchTerm );
 	requestHttpData(
 		id,
 		http( {
@@ -175,6 +188,7 @@ const requestSiteVerticalHttpData = ( searchTerm, limit = 5, id = SITE_VERTICALS
 			freshness: -Infinity,
 		}
 	);
+};
 
 export const isVerticalSearchPending = () =>
 	'pending' === get( getHttpData( SITE_VERTICALS_REQUEST_ID ), 'state', false );
@@ -194,8 +208,11 @@ export default localize(
 		},
 		() => ( {
 			requestVerticals: requestSiteVerticals,
-			requestDefaultVertical: ( searchTerm = 'business' ) =>
-				requestSiteVerticalHttpData( searchTerm, 1, DEFAULT_SITE_VERTICAL_REQUEST_ID ),
+			requestDefaultVertical: ( searchTerm = 'business' ) => {
+				if ( ! get( getHttpData( DEFAULT_SITE_VERTICAL_REQUEST_ID ), 'data', null ) ) {
+					requestSiteVerticalHttpData( searchTerm, 1, DEFAULT_SITE_VERTICAL_REQUEST_ID );
+				}
+			},
 		} )
 	)( SiteVerticalsSuggestionSearch )
 );
